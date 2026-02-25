@@ -1,0 +1,38 @@
+version: "3.9"
+
+services:
+  auth-service:
+    image: auth-service:latest        # Replace with your built auth service image
+    container_name: auth-service
+    ports:
+      - "5001:5001"
+    build:
+      context: ./auth-service        # path to your auth service Dockerfile
+    environment:
+      - SERVER_PORT=5001
+
+  product-service:
+    image: product-service:latest    # Replace with your built product service image
+    container_name: product-service
+    ports:
+      - "5002:5002"
+    build:
+      context: ./product-service     # path to your product service Dockerfile
+    environment:
+      - SERVER_PORT=5002
+
+  gateway:
+    image: gateway:latest            # Replace with your built gateway image
+    container_name: api-gateway
+    ports:
+      - "5050:5050"
+    build:
+      context: ./api-gateway         # path to your gateway Dockerfile
+    environment:
+      - SERVER_PORT=5050
+      - JWT_SECRET=your_jwt_secret_here
+      - AUTH_URL=http://auth-service:5001
+      - PRODUCT_URL=http://product-service:5002
+    depends_on:
+      - auth-service
+      - product-service

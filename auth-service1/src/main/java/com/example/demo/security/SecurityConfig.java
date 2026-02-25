@@ -1,0 +1,22 @@
+package com.example.demo.security;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.web.server.SecurityWebFilterChain;
+
+@Configuration
+public class SecurityConfig {
+
+    @Bean
+    public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
+        return http
+            .csrf(csrf -> csrf.disable()) // Disable CSRF for APIs
+            .authorizeExchange(exchange -> exchange
+                .pathMatchers("/auth/**").permitAll() // Public routes
+                .anyExchange().authenticated()       // All other routes require authentication
+            )
+            .oauth2ResourceServer(oauth2 -> oauth2.jwt()) // Enable JWT validation
+            .build();
+    }
+}
